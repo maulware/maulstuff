@@ -1,0 +1,34 @@
+#########
+#tags: WireGuard,EdgeOS,Ubiquity,EdgeRouter X
+#########
+# Zbuquiti Edge X
+
+# auto install wireguard script
+scp ~/Downloads/wireguard$version edgeos.server:./
+ssh to server and move into package folder.
+cat<<EOF> /config/scripts/post-config.d/wireguard 
+#!/bin/bash 
+#
+# Install wireguard if not yet there.
+#
+
+cpath='/config/my_packages'
+doneit='/var/lib/my_packages'
+
+dpkg -l | grep -q wireguard && exit 0
+
+if [ -d "$cpath" ]; then
+
+  dpkg -i $cpath/*
+  if [ $? == 0 ]; then
+    echo Package install successful
+    touch $doneit 
+  else 
+    echo Package install failed 
+  fi
+
+fi
+
+exit 0
+EOF
+chmod +x /config/scripts/post-config.d/wireguard 
