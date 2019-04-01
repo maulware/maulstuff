@@ -1,6 +1,6 @@
 # mpv wrapper
 
-Allows all local mpv instances to be controlled via commandline. Normally only 1 is required, but in case multiple mpv instances are running, it makes sense to have a convinient way of controlling all of them simultaniously.
+Allows all local mpv instances to be controlled via commandline. Normally only 1 is required, but in case multiple mpv instances are running, it makes sense to have a convenient way of controlling all of them simultaneously.
 
 ## Install
 
@@ -8,7 +8,7 @@ Put the mpv wrapper script into any directory in your PATH (e.g. $HOME/bin or $H
 
 ## Use
 
-Use mpv like before `mpv whatever`, now all started instaces can be paused and contiued via:
+Use mpv like before `mpv whatever`, now all started instances can be paused and continued via:
 ```
 for s in /tmp/mpvsocks/* ; do
     echo '{ "command": ["set_property", "pause", true] }' | socat - $s
