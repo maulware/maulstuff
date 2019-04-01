@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# Wrapper for mpv to allow running multiple instances
+# but still allowing to controll all of them using sockets
+#
+# Word of caution from man mpv regarding the used JSON IPC:
+#   WARNING:
+#      This is not intended to be a secure network protocol. It is explicitly insecure: there is no authentication, no encryption, and the com‐
+#      mands themselves are insecure too. For example, the run command is exposed, which can run arbitrary system  commands.  The  use-case  is
+#      controlling the player locally. This is not different from the MPlayer slave protocol.
+#
+# (c) maulware
+#
+
+sock_dir=/tmp/mpvsocks
+mkdir -p "${sock_dir}"
+
+finish () {
+    [[ -n "${DEBUG}" ]] && echo "[D] removing mpv socket: ${mpvsocket}"
+    rm ${mpvsocket}
+}
+
+trap finish SIGHUP SIGINT SIGQUIT SIGABRT SIGTERM QUIT EXIT
+
+#getting next free socket as we can only have one per instance
+last=$(find "${sock_dir}" -type s | sort | tail -n1)
+if [ -z "${last}" ]; then
+  mpvsocket="${sock_dir}/1"
+else
+  id=$(basename "${last}")
+  mpvsocket="${sock_dir}/$(( $id + 1 ))"
+fi
+
+[[ -n "${DEBUG}" ]] && echo "[D] starting mpv with socket: ${mpvsocket}"
+/usr/bin/mpv --input-ipc-server=$mpvsocket $@
