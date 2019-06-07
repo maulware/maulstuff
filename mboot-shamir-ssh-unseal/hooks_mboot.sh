@@ -38,6 +38,7 @@ cp -pr /etc/localtime  "${DESTDIR}/etc/"
 # find libnss and use the folder with the most files.
 libnsspath=$(find /lib/ -name "libnss_*" | xargs dirname | uniq -c | sort --numeric-sort | tail -1 | awk '{ print $2 }')
 cp "${libnsspath}/"libnss_* "${DESTDIR}/lib/"
+cp "${libnsspath}/"libnsl.so.1 "${DESTDIR}/lib/"
 
 # specific known_host pattern to trust shamir-share-servers required to be set ouf of scope
 if ! [ -f /etc/mboot/known_hosts ]; then

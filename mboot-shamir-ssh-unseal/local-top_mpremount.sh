@@ -18,10 +18,20 @@ esac
 # local decrypt function that can be overwritten by userdata
 mboot_decrypt () {
     b64data=$1
-    echo "$b64data" | base64 -d
+    {
+        test=0
+        while [[ $test -lt 8 ]]; do
+            test=$(($test + 1))
+            [ -p /lib/cryptsetup/passfifo ] && break
+            sleep 1
+        done
+        # head removes base64 added newline
+        echo "$b64data" | base64 -d | head -c -1 > /lib/cryptsetup/passfifo
+    } &
 }
+
 mboot_networking () {
-    echo "[I] No networking overwrite"
+    echo "[I] No userdata defined networking overwrite"
 }
 
 [ -f /etc/mboot/userdata ] && . /etc/mboot/userdata
