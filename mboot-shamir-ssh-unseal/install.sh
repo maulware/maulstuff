@@ -21,9 +21,9 @@ umask 077
 mkdir /etc/mboot/
 touch /etc/mboot/userdata
 
-ssh-keygen -P '' -f /etc/mboot/boot_key -t ed25519
+[[ ! -f /etc/mboot/mboot_key ]] && ssh-keygen -P '' -f /etc/mboot/boot_key -t ed25519
 echo "Install on shamir servers: $(cat /etc/mboot/boot_key.pub)"
 
 # not touching to allow errors if not created by user, as required:
-echo "Add /etc/mboot/ssh_config and update-initramfs -u"
+echo "Add /etc/mboot/ssh_config (see README.md) and update-initramfs -u"
 

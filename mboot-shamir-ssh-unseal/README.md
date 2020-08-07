@@ -4,6 +4,8 @@ This tool is placing scripts into initramfs and is contacting servers that conta
 The actual distribution of the key shares and ssh (public)keys is up to the implementor.
 The system can either be deployed in a trusted or untrusted (e.g. internet/corporate) network.
 
+TODO: Only tested on debian, ubuntu. Arch/manjaro require additional work (sssd AUR and stuff)
+
 ## Key destribution
 The ssss-split tool does not support 128 ASCII characters and 256 hex digits. domagic script is provided to allow split of more and already prepares the shares for X servers. the 1_shares, 2_shares, ..., X_shares are the files that need to be put on the servers.
 domagic has a self test to recombine the split key parts and check them.
@@ -55,8 +57,8 @@ Generate key directly on the server via ```ssh-keygen -f /etc/mboot/ -t ed25519`
 This is the configuration with parts of the actual secret. Only requirement on the server is that when the client is authenticating with his publickey that he receives the key part without any further interaction.
 Example remoteExampleUser's .ssh/authorized_keys file
 ```
-RemoteCommand="cat /keypartfolder/000-keysharefile" ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA000
-RemoteCommand="cat /keypartfolder/010-keysharefile" ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA010
+command="cat /keypartfolder/000-keysharefile" ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA000
+command="cat /keypartfolder/010-keysharefile" ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA010
 cert-authority ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILmLXfef0ASYrIdwpqp8Z4uhxBPak1qMUCtYLevD8Mtq example-CA
 ```
 ### Advanced

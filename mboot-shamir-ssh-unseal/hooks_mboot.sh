@@ -17,8 +17,12 @@ esac
 
 echo "[I] Including what is required for shamir unseal"
 copy_exec /bin/nc
+copy_exec /usr/bin/wc
 copy_exec /usr/bin/ssh
 copy_exec /usr/bin/sort
+copy_exec /usr/bin/head
+copy_exec /usr/bin/tail
+copy_exec /usr/bin/uniq
 copy_exec /usr/bin/base64
 copy_exec /usr/bin/passwd
 copy_exec /usr/bin/ssss-combine

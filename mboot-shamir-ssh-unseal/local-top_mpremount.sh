@@ -49,14 +49,15 @@ shareData=""
 for host in $(grep "Host mboot_" /etc/mboot/ssh_config 2>/dev/null | awk '{ print $2 }'); do
     _dat=$(ssh -F /etc/mboot/ssh_config "$host" 2>/dev/null)
     if [ $? -eq 0 ] && [ $(echo "$_dat" | wc -l) -gt 0 ]; then
-        shareData=$(echo -e "$shareData\n$_dat")
+        shareData=$(echo "$shareData\n$_dat")
+	echo "[I] Received data from $host"
     else
-        echo "Failed to get shares from $host"
+        echo "[W] Failed to get shares from $host"
     fi
 done
 
 # get all IDs
-hids=$(echo "$shareData" | cut -d'-' -f1 | uniq | tr '\n' ' ')
+hids=$(echo -e "$shareData" | cut -d'-' -f1 | uniq | tr '\n' ' ')
 
 got=$(echo "${hids}" | wc -w)
 if [ "$got" -lt "$mboot_t" ]; then
@@ -70,9 +71,9 @@ num_splitparts=$(echo "$shareData" | cut -d'-' -f1 | sort | uniq -c | tail -1 | 
 b64data=$(for lnr in $(seq 1 "${num_splitparts}"); do
     hdata=""
     for h_id in $hids; do
-        hdata=$(echo -e "$(echo "$shareData" | grep "^${h_id}-" | head -"${lnr}" | tail -1)\n${hdata}")
+        hdata=$(echo "$(echo -e "$shareData" | grep "^${h_id}-" | head -"${lnr}" | tail -1)\n${hdata}")
     done
-    echo "$hdata" | ssss-combine -t"${mboot_t}" -Qq;
+    echo -e "$hdata" | ssss-combine -t"${mboot_t}" -Qq;
 done 2>&1)
 
 # decompress into actual data
