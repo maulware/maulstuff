@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# Using ff profile cookies to allow authenticate against google
+# and download account/age restricted videos, private playlist, ...
+#
+# Config format example:
+#   ffprofiledir="$HOME/.mozilla/firefox/non-default"
+#
+
+if [[ $# -lt 1 ]]; then
+    echo "Hey, feed me (URL required"
+    exit 1
+fi
+
+conffile="$HOME/.config/mscripts/ytdl_extra_config"
+
+url="$1"
+cookiesfile=$(mktemp)
+orignalcookies=$(mktemp)
+
+function _exittrap {
+    rm "$orignalcookies" "$cookiesfile"
+}
+trap _exittrap SIGHUP SIGINT SIGQUIT SIGABRT SIGTERM QUIT EXIT
+
+ffprofiledir="$HOME/.mozilla/firefox/Default"
+[[ -f "$conffile" ]] && source "$conffile"
+
+cat "$ffprofiledir/cookies.sqlite" > "$orignalcookies"
+
+{
+echo "# Netscape HTTP Cookie File"
+sqlite3 -separator $'\t' "$orignalcookies" <<- EOF
+	.mode tabs
+	.header off
+	select host,
+	case substr(host,1,1)='.' when 0 then 'FALSE' else 'TRUE' end,
+	path,
+	case isSecure when 0 then 'FALSE' else 'TRUE' end,
+	expiry,
+	name,
+	value
+	from moz_cookies;
+EOF
+} > "$cookiesfile"
+
+python3 /usr/bin/youtube-dl -f bestvideo+bestaudio --all-subs --cookies "$cookiesfile" "$url" --verbose
